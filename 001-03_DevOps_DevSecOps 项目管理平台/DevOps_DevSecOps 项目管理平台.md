@@ -1,7 +1,3 @@
-[TOC]
-
-
-
 # DevOps_DevSecOps 项目管理
 
 
@@ -63,9 +59,11 @@ DevOps  的准则：总有更好的方法，精益求精。
   - 部署频率可以得到提升
   - 周期时间（从代码提交到部署上线）的时间可以到分钟级
 
-## DevOps 能力环
+## DevOps 能力环 & DevSecOps 能力环
 
 ![DevOps 能力环](figures/DevOps 能力环.png)
+
+![DevSecOps 能力环](figures/DevSecOps 能力环.png)
 
 # DevOps 与 敏捷、精益
 
