@@ -134,7 +134,11 @@ DevOps 是一个完整的面向 IT 运维的工作流，以 IT 自动化以及�
 
 
 
-# DevOps 完整过程
+# DevOps 平台和完整过程
+
+## DevOPS 平台组成
+
+![DevOps 平台](figures/DevOps 平台.png)
 
 ## 一个完整的过程
 
