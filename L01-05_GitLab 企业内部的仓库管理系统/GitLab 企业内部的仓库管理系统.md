@@ -94,7 +94,75 @@ xiaoming@qq.com是邮箱，随便填。完成后就会在`C:\Users\Administrator
 
 ​                    
 
-​                  
+# GitLab 的 Wiki 功能
+
+https://gitlab.com/larryli/gitlab/-/wikis/home
+https://docs.gitlab.com/ee/user/project/wiki/
+https://docs.gitlab.com/ee/api/wikis.html
+https://docs.gitlab.com/ee/user/markdown.html#table-of-contents
+
+## Wiki 目录
+
+Create a table of contents    [[_TOC_]]
+To generate a table of contents from a wiki page’s subheadings, use the [[_TOC_]] tag. For an example, read Table of contents.
+
+## Wiki 进行多级分类
+
+https://git.rt-thread.com/help/user/project/wiki/index#creating-a-new-wiki-page
+
+https://docs.gitlab.com/ee/user/markdown.html#table-of-contents
+
+Move a wiki page     **/**
+You need Developer permissions or higher to move a wiki page:
+
+1.	Go to the page for your project or group.
+2.	In the left sidebar, select Wiki, and go to the page you want to move.
+3.	Select the edit icon ().
+4.	Add the new path to the Title field. For example, if you have a wiki page called about under company and you want to move it to the wiki’s root, change the Title from about to /about.
+5.	Select Save changes.
+
+
+
+自己写的Gitlab Wiki 目录生成工具, 可能会帮到你:https://github.com/fengxuway/gitlab-wiki-toc另: 注意列表缩进两个空格不够, gitlab的wiki需要4个空格才能分级:
+
+```
+- 1
+    - 1.1
+    - 1.2
+        - 1.2.1
+        - 1.2.2
+- 2
+```
+
+
+
+## GitLab Wiki 内容恢复、版本管理
+
+gitlab的Wiki是用git管理的从此再也不用为误删担心了
+
+选择一个目录克隆wiki
+
+在gitlab网站wiki/Git Access页面内找项目连接地址
+
+git clone git @git.xxxxxxx.org:xxxx/name.wiki.git
+
+最后将修改push到服务器上就ok了.从此以后可以和代码一样在本地写wiki后再推到服务器了
+
+
+
+## wiki 使用梳理
+
+  https://blog.csdn.net/wangying202/article/details/115404593?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~aggregatepage~first_rank_v2~rank_aggregation-4-115404593.pc_agg_rank_aggregation&utm_term=gitlab%E4%B8%ADwiki%E7%9A%84%E4%BD%BF%E7%94%A8&spm=1000.2123.3001.4430  
+
+
+
+
+
+# GitLab 的 issue 跟踪
+
+
+
+​                        
 
 # GitLab 的 CI/CD
 
