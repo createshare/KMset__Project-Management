@@ -662,7 +662,48 @@ build_job:
 - 插入图片时，不能用斜杠“\”（CI 编译不通过），都要改成用斜杠“/”。
   -    例如，figures\User_Manual\XXXX, 都要改成 figures/User_Manual/xx
 
+# GitLab Runner
 
+GitLab Runner 就是一个用来执行 .gitlab-ci.yml 脚本的工具。可以理解成，Runner 就像认真工作的工人，GitLab-CI 就是管理工人的中心，所有工人都要在 GitLab-CI 里面注册，并且表明自己是为哪个项目服务。当相应的项目发生变化时，GitLab-CI 就会通知相应的工人执行对应的脚本。
+
+GitLab-Runner可以分类两种类型：Shared Runner（共享型）和Specific Runner（指定型）。
+
+- l Shared Runner：所有工程都能够用的，且只有系统管理员能够创建。
+- Specific Runner：只有特定的项目可以使用。
+
+## Runner 安装
+
+以Linux为例：其他系统请参考官网文档:https://docs.gitlab.com/runner/install/
+
+- For Debian/Ubuntu 
+
+  curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-ci-multi-runner/script.deb.sh | sudo bash 
+
+- For RHEL/CentOS 
+
+  curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-ci-multi-runner/script.rpm.sh | sudo bash
+
+
+
+## 获取 Runner 注册 Token
+
+安装好Runner之后，需要向Gitlab进行注册，注册Runner需要GitLab-CI的url和token。可根据需求注册选择所需类型Runner。
+
+ 获取Shared Runner 注册 Token： 使用管理员用户登录，进入Admin Area->OverView->Runners 界面。
+
+![注册 Token 的 Runners 界面](figures/注册 Token 的 Runners 界面.jpg)
+
+获取Specific Runner注册Token： 进行项目仓库->settings->CI/CD界面
+
+![注册 Token 的 CI-CD界面](figures/注册 Token 的 CI-CD界面.jpg)
+
+## 注册 Runner
+
+执行 gitlab-ci-multi-runner register 命令进行 Runner 注册，期间会用到前期获取的 url 及 token；注册完成之后，GitLab-CI 就会多出一条 Runner 记录。
+
+更多系统注册，请参考阅读官方文档：https://docs.gitlab.com/runner/register/
+
+![Runner 记录](figures/Runner 记录.jpg)
 
 # GitLab 自建私有的托管服务器
 
