@@ -15,6 +15,8 @@ GitLab 能被部署到自己的服务器上，更安全可靠，适合企业级�
 
 2022 年 2 月消息，极狐（GitLab）正式宣布推出极狐 GitLab SaaS （JihuLab.com），为中国用户提供从源代码托管到开发运维的全栈式一体化 DevOps SaaS 平台与企业级专家咨询服务。
 
+
+
 # GitLab 基本概念
 
 GitLab 自带相应的 web 服务提供了良好的交互界面，并且有完善的问题追踪和 Wiki 功能。
@@ -52,7 +54,7 @@ GitLab 提供了类似于 GitHub 的免费云托管服务，打开 GitLab 的主
 
 
 
-## Git 托管常见问题及解决方法
+## Git 托管：常见问题、解决方法、Tips
 
 ### GitLab配置SSH密钥
 
@@ -180,6 +182,8 @@ Pipeline 即流水线，可以像流水线一样执行多个 Job. 在代码提�
 
 ### 阶段（Stage）
 
+用于定义所有作业(job)可以使用的全局阶段，gitlab-ci.yml允许灵活定义多个阶段，stages元素的顺序定义了作业执行的顺序。Job关联的stage名相同时，该多个Job将并行执行（在拥有足够Runner情况下）。
+
 一般的流水线通常会分为几段；在 pipeline中，可以将多个任务划分在多个阶段中，只有当前一阶段的所有任务都执行成功后，下一阶段的任务才可被执行。
 
 注：如果某一阶段的任务均被设定为“允许失败”，那这个阶段的任务执行情况，不会影响到下一阶段的执行。
@@ -193,7 +197,20 @@ Pipeline 即流水线，可以像流水线一样执行多个 Job. 在代码提�
 
 ### 作业（Job）
 
+Job是.gitlab-ci.yml文件中最基本的元素，由一系列参数定义了任务启动时所要做的事情，用户可以创建任意个任务；每个任务必须有一个独一无二的名字，但有一些保留keywords不能用于Job名称，image，services，stages，types，before_script，after_script，variables，cache。
+
 Job 为任务，是 GitLab CI 系统中可以独立控制并运行的最小单位。 在提交代码后，开发者可以针对特定的 commit完成一个或多个 job，从而进行 CI/CD 操作。
+
+Job被定义为顶级元素，并且至少包括一条script语句，如果一个 Job 没有显式地关联某个 Stage，则会被默认关联到 test Stage。
+
+```bash
+job1:
+# 关联到bulid阶段
+stage: build
+# 所需执行的脚本
+script:
+
+```
 
  作业就是运行器(Runner)要执行的指令集合，Job 可以被关联到一个 Stage。当一个 Stage 执行的时候，与其关联的所有 Job 都会被执行。在有足够运行器的前提下,同一阶段的所有作业会并发执行。作业状态与阶段状态是一样的，实际上，阶段的状态就是继承自作业的。
 
@@ -328,7 +345,69 @@ $ uname -v
 
 ```
 
+### before_script和after_script
 
+before_script是用于定义一些在所有任务执行前所需执行的命令, 包括部署工作，可以接受一个数组或者多行字符串。after_script用于定义所有job执行过后需要执行的命令，可以接受一个数组或者多行字符串。
+
+示例：
+
+```bash
+#定义全局 before_script:
+default:
+  before_script:
+    - global before script
+
+#覆盖全局before_script
+job:
+  before_script:
+    - execute this instead of global before script
+  script:
+    - my command
+  after_script:
+    - execute this after my script
+```
+
+### only and except
+
+- only和except两个参数说明了job什么时候将会被创建。
+
+- only定义了job需要执行的所在分支或者标签。
+
+- except定义了job不会执行的所在分支或者标签。
+
+- 以下是这两个参数的几条用法规则：
+
+  - only和except如果都存在在一个job声明中，则所需引用将会被only和except所定义的分支过滤
+  - only和except允许使用正则
+  - only和except允许使用指定仓库地址，但是不forks仓库
+
+- 此外，only和except允许使用以下一些特殊关键字：
+
+  | **值**    | **描述**                                                     |
+  | --------- | ------------------------------------------------------------ |
+  | branches  | 当一个分支被push上来                                         |
+  | tags      | 当一个打了tag的分支被push上来                                |
+  | api       | 当一个pipline被piplines api所触发调起，详见piplines  api（https://docs.gitlab.com/ce/api/pipelines.html） |
+  | external  | 当使用了GitLab以外的CI服务                                   |
+  | pipelines | 针对多项目触发器而言，当使用CI_JOB_TOKEN并使用gitlab所提供的api创建多个pipelines的时候 |
+  | pushes    | 当pipeline被用户的git push操作所触发的时候                   |
+  | schedules | 针对预定好的pipline而言（每日构建一类~，具体请看https://docs.gitlab.com/ce/user/project/pipelines/schedules.html） |
+  | triggers  | 用token创建piplines的时候                                    |
+  | web       | 在GitLab页面上Pipelines标签页下，你按了run  pipline的时候    |
+
+- 下面的例子，job将会只在issue-开头的refs下执行，反之则其他所有分支被跳过：
+
+  ```bash
+  job:
+    # use regexp
+    only:
+      - /^issue-.*$/
+    # use special keyword
+    except:
+      - branches
+  ```
+
+  
 
 
 
@@ -494,11 +573,80 @@ test_chinese:
 
 ```
 
-### CI脚本：自动执行静态代码分析
+### CI 脚本：自动执行静态代码分析
 
 
 
-## CI 常见问题及解决方法
+## CI CD：常见问题、解决方法、Tips
+
+### ★仅限特定分支上的GitLab CI管道
+
+我们有两个一般分支： `master` （仅限 生产环境 ）和 `develop` . 对于开发，我们从 `develop` 分支创建 `feature/some-feature` 分支 . 开发完成后，我们创建从 `feature/some-feature` 到 `develop` 的合并请求 . 当合并请求被批准并合并到 `develop` 分支时，我想运行管道以构建应用程序并在某些环境中部署构建 .
+
+```bash
+image: node:7.5-configured
+
+stages:
+    - build
+    - deploy
+
+build_job:
+    stage: build
+    only:
+        - develop
+    script:
+        - /bin/bash <some script here>
+
+...
+```
+
+### ★如何在gitlab-ci中指定子模块分支
+
+如何在gitlab-ci中指定子模块分支 How to specify the submodule branch in gitlab-ci?
+
+```bash
+#您在要构建的项目的.gitmodule文件中指定它。
+#You specify it in the .gitmodules file of the project you are building. 
+[submodule "MyRepo"]
+    path = MyRepo
+    url = https://github.com/vendor/MyRepo.git
+    branch = master
+
+```
+
+### ★ gitlab-CI中使用tag作为版本号硬编译进程序中
+
+在使用gitlab过程中,我发现如果能直接将gitlab的tag与自动生成的软件版本做成一致的话,在后续的维护上会更加方便.于是研究了一番如何将tag作为版本号硬编译进程序中的方法.主要是一下几个方面:
+
+- 在gitlab-ci.yml中，指定只对tag生效
+
+  ```bash
+  # gitlab-ci.yml中内置 $CI_COMMIT_REF_NAME 得到当前的tag
+  only:
+  	- tags
+  ```
+
+- 使用c++。生成version.h文件,在gitlab-ci.yml中
+
+  ```bash
+  # 在代码中通过 #include "version.h" 并使用 __VERSION__ 宏来操作版本号
+  	- echo "#pragma once" > inc/version.h
+  	- echo "#define __VERSION__  \"$CI_COMMIT_REF_NAME\"" >> inc/version.h
+  ```
+
+- 使用go。可以使用类似c++的方式,生成version.go文件来实现,也可以编译命令中直接修改源文件中指定的值,比如:
+
+  ```bash
+  # version.go中:
+  package version
+  var Version = "unknown"
+  
+  # 那么在gitlab-ci.yml中就可以
+  go build -ldflags "-X version.Version '$CI_COMMIT_REF_NAME\'"
+  # 即可将Version修改为当前tag
+  ```
+
+  
 
 ### ★“/”导致 CI 编译文档失败
 
