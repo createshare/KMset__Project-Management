@@ -1,5 +1,9 @@
 # SummarySet__Project-Management
-Project mangement summary set. 项目管理经验总结（针对软件开发、嵌入式开发、敏捷开发、DevOps实践）。
+Project mangement summary set. 项目管理经验总结。
+
+针对嵌入式、软件开发相关的技术管理 TM、知识管理 KM、敏捷开发APM、DevOps实践、以及常规的项目管理 PM。
+
+# 000 Technical Management 技术型 管理
 
 # 001 Project Management 项目管理
 
@@ -8,6 +12,12 @@ Project mangement summary set. 项目管理经验总结（针对软件开发、�
 ## Agile Project Management (APM) 敏捷项目管理
 
 ## DevOps 项目管理平台
+
+## CI CD 持续集成 持续交付
+
+## GitLab 企业内部的仓库管理系统
+
+## Docker 应用容器引擎
 
 
 
