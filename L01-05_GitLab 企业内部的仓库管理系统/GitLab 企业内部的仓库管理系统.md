@@ -92,9 +92,11 @@ xiaoming@qq.com是邮箱，随便填。完成后就会在`C:\Users\Administrator
 
 ![GitLab 的 MR，最多只能显示154个变更的文件](figures/GitLab 的 MR，最多只能显示154个变更的文件.jpg)          
 
-​                                             
+​                    
 
-# GitLab CI/CD
+​                  
+
+# GitLab 的 CI/CD
 
 GitLab CI/CD（后简称 GitLab CI）是一套基于 GitLab 的 CI/CD 系统，需要让开发人员在仓库根目录下创建 .gitlab-ci.yml 文件在项目中配置 CI/CD 流程，并且使用Gitlab Runner执行该脚本。在提交后，系统可以自动/手动地执行任务，完成 CI/CD 操作。
 
@@ -443,6 +445,108 @@ test_chinese:
 - 　还有文档里面，有斜杠“/”“\”时，也会报错（CI认为是个路径）
 - 插入图片时，不能用斜杠“\”（CI 编译不通过），都要改成用斜杠“/”。
   -    例如，figures\User_Manual\XXXX, 都要改成 figures/User_Manual/xx
+
+
+
+# GitLab 自建私有的托管服务器
+
+GitLab 除了云端托管服务，其最为流行的功能是可以将服务搭建在私有服务器，
+
+- 对于企业来说会更加安全可靠。
+- 可安装在自有服务器支持物理机或者云环境。
+- 支持 Ubuntu、Cent0S、Debian等多种操作系统。
+- 支持多种安装方式，如安装包 Image、docker 镜像、Kubernetes Helm Repository 等。
+- GitLab 自建托管服务也分为免费的社区版和付费的企业版。
+- GitLab 社区版是免费的。
+- 企业版分为 Starter、Perminum、Ultimate 三种计划。
+- 安装方法是参考 GitLab 在 GitHub 上的 Wiki 页面。
+
+
+
+## 采用 docker 容器镜像安装公司GitLab
+
+1. 先保护你的服务器环境中，已经安装了 docker，具有网络保证能从 dockerhub 上拉取相关的镜像。
+
+2. 用 docker 镜像部署 GitLab 非常简单，仅需执行以下命令。
+
+```bash
+$ sudo docker run --detach
+  --publish 443:443 --publish 80:80 --publish 22:22
+  --name gitlab
+  --restart always
+  --volume /srv/gitlab/config:/etc/gitlab
+  --volume /srv/gitlab/logs:/var/log/gitlab
+  --volume /srv/gitlab/data:/var/opt/gitlab
+  gitlab/gitlab—ce:11.5.1-ce.0
+```
+
+注意: 
+
+- 这里指定的是 GitLab 社区版 11.5.1-ce.0 镜像，可以到 dockerHub 找历史版本。
+- 安装时仅需改成相应的 Tag，gitlab/gitlab-ce:latest 指最新版本。
+- publish 参数将容器的端口映射到主机，保证网络内的其他机器可以访问GitLab，80 是 http 协议所用端口，443 是 https 协议所用端口，22 是 ssh 协议所用端口。
+- volume 参数将容器内的路径映射到主机文件系统，使GitLab的持久化数据能保存在主机上。
+- 容器内的 /var/opt/gitlab 存储 GitLab 应用数据，/var/log/gitlab 存储日志，/etc/gitlab 存储 GitLab 相关的配置文件。
+- detach 参数能使容器一直运行在后台。
+- restart 参数指定容器由于某种原因退出时是否重启。
+- gitlab 是此容器的名字。该命令会先将指定镜像拉取到本地，然后创建一个名为 gitlab 的容器，并将其启动运行在后台。
+
+3. 命令执行后，会返回一个容器的 ID。执行以下命令查看gitlab容器状态：
+
+   ```bash
+   $ sudod docker container ls -f name=gitlab
+   ```
+
+   容器状态为“healthy"时，证明容器己启动目、正常运行。
+
+4. 此时，登入容器修改配置文件：
+
+   ```bash
+   $ sudod docker exec -it gitlab vi /etc/gitlab/gitlab.rb
+   ```
+
+   通过更改 external_url 的值指定 GitLab 服务的 url，一般将 url 设为宿主机机器名或 IP 地址，这里配置使用的是 http 地址。
+
+   external_url 'http://host234.XX.corp'
+
+5. 如果 GitLab 默认的端口号（80，443、22）在主机端己经被占用了，就需要在创建容器时用 publish 参数更改所映射的主机监听端口。例如，以下命令就将容器内的 80 端口映射到主机端的 8080，将容器的 443 端口映射为主机端的 543。
+
+   ```bash
+   $ sudo docker run --detach
+     --publish 543:443 --publish 8080:80 --publish 33:22
+     --name gitlab
+     --restart always
+     --volume /srv/gitlab/config:/etc/gitlab
+     --volume /srv/gitlab/logs:/var/log/gitlab
+     --volume /srv/gitlab/data:/var/opt/gitlab
+     gitlab/gitlab—ce:11.5.1-ce.0
+   ```
+
+   
+
+6. 此外，还需要对配置文件/etc/gitlab/gitlab.rb 做相应更改：
+
+   - 一是修改 external_url 地址：
+
+     ```bash
+     external_url 'http://host234.XX.corp:8080'   #for http
+     或者
+     external_url 'https://host234.XX.corp:543'  #for https
+     ```
+
+   - 二是修改ssh端口：
+
+     ```bash
+     gitlab_rails ['gitlab_shell_ssh_port'] = 2289
+     ```
+
+7. GitLab 配置完毕，即可通过浏览器打开 external_url 指定的网址，第一次登录跳出的网页，需要为 root 用户设置密码。
+
+- root 用户拥有最高权限，可以进入管理员界面，通过一个简单报表对运行情况、负载、系统状态等进行实时监控。
+- 同时，还能对 GitLab 的注册限制、账号配额、安全策略等进行配置。
+- 其他用户可以正常注册使用仓库托管服务，你可以创建仓库或者fork仓库，也可以创建小组等，和 GitLab.com 的云托管服务没什么差别。
+
+
 
 
 
