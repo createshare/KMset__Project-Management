@@ -52,9 +52,21 @@ GitLab 提供了类似于 GitHub 的免费云托管服务，打开 GitLab 的主
 
 ## Review：合并代码和提交日志查看
 
+## GitLab 权限控制
 
+### 分支保护
 
-## Git 托管：常见问题、解决方法、Tips
+选择master分支受保护。
+
+作用：防止开发用户直接push到master分支代码。
+
+![GitLab 权限控制__分支保护](figures/GitLab 权限控制__分支保护.jpg)
+
+### 用户权限
+
+额外补充一点，开发分支所提交上来的代码可以在Pipelines构建中查看是那个用户提交上来的，默认在每个分支都会进行编译，所以都能查到是谁提交过来的代码。
+
+## Git ：常见问题、解决方法、Tips
 
 ### GitLab配置SSH密钥
 
@@ -705,6 +717,8 @@ GitLab-Runner可以分类两种类型：Shared Runner（共享型）和Specific 
 
 ![Runner 记录](figures/Runner 记录.jpg)
 
+
+
 # GitLab 自建私有的托管服务器
 
 GitLab 除了云端托管服务，其最为流行的功能是可以将服务搭建在私有服务器，
@@ -805,9 +819,47 @@ $ sudo docker run --detach
 
 
 
+# GitLab 整体部署
 
+## 自动更新图
 
+1、开发分支提交代码到远程master分支
 
+2、审核者通过并合并代码到远程master分支；开发分支构建成功才会合并到master分支，否则，及时是不能合并到主分支master
+
+3、触发master分支的runner进行pipeline构建
+
+4、构建过程：传送脚本到Salt Stack管理机，通过Salt Stack发起指令去触发游戏服更新代码
+
+![自动更新图](figures/自动更新图.jpg)
+
+## 回滚流程图
+
+![回滚流程图](figures/回滚流程图.jpg)
+
+概述：
+
+1、回滚请求是由审核者发起
+
+2、查看commit日志
+
+3、回滚到特定的版本
+
+4、新建一个回滚分支并切到这个分支
+
+5、将本地的回滚分支推送到远程分支
+
+6、设置master分支不受保护和非默认分支（必须条件）
+
+7、删除本地和远程的master分支
+
+8、创建本地的master分支并切到这个master分支
+
+9、推送代码到远程的master分支
+
+10、设置master分支受保护和设置为默认分支
+
+11、开发分支需要重新发起MR请求去触发更新构建到游戏服上面的代码
 
 
 
