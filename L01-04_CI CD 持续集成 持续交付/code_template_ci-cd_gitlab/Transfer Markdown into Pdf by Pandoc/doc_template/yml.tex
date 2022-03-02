@@ -1,0 +1,534 @@
+\documentclass[a4paper,oneside]{book}
+
+% 添加需要使用的宏包
+\usepackage{tocbibind} % for toc show inside pdf
+\usepackage[
+	%urlbordercolor = {1 1 1},
+	%linkbordercolor = {1 1 1},
+	%citebordercolor = {1 1 1},
+    bookmarksnumbered, % add bookmark number in pdf output
+	urlcolor = blue,
+	colorlinks = true,
+	citecolor = black,
+	linkcolor = black]{hyperref}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{tabu}
+\usepackage{multirow,tabulary}
+\usepackage{xltxtra}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{indentfirst}
+\usepackage{framed,color}
+\usepackage{footnpag}
+\usepackage{listings}
+\usepackage{array}
+\usepackage[font=small,format=plain,labelfont=bf,up,textfont=it,up]{caption}
+\usepackage{colortbl} 
+\usepackage{titlesec} % texlive-latex-extra package
+\usepackage{etoolbox}
+\usepackage{fancyvrb,newverbs}
+\usepackage[table]{xcolor}
+\usepackage{setspace}
+\usepackage{datetime}
+
+% Overwrite \begin{figure}[htbp] with \begin{figure}[H]
+\usepackage{float}
+\let\origfigure=\figure
+\let\endorigfigure=\endfigure
+\renewenvironment{figure}[1][]{%
+  \origfigure[H]
+}{%
+  \endorigfigure
+}
+
+\newcommand{\passthrough}[1]{#1}
+
+\makeatletter
+\patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}
+\patchcmd{\ttlh@hang}{\noindent}{}{}{}
+\makeatother\usepackage[titletoc]{appendix} % this is used for \appendices
+
+%
+% listing colors
+%
+\definecolor{listing-background}{HTML}{F7F7F7}
+\definecolor{listing-rule}{HTML}{B3B2B3}
+\definecolor{listing-numbers}{HTML}{B3B2B3}
+\definecolor{listing-text-color}{HTML}{000000}
+\definecolor{listing-keyword}{HTML}{435489}
+\definecolor{listing-identifier}{HTML}{435489}
+\definecolor{listing-string}{HTML}{00999A}
+\definecolor{listing-comment}{HTML}{8E8E8E}
+\definecolor{listing-javadoc-comment}{HTML}{006CA9}
+
+\definecolor{colorchapter}{RGB}{70,130,180}    % SteelBlue
+\definecolor{colorsection}{RGB}{95,158,160}    % CadetBlue
+\definecolor{colorsubsection}{RGB}{139,0,0}    % DarkRed
+\definecolor{colorheader}{RGB}{70,130,180}     % SteelBlue
+
+%
+% tables
+%
+
+\definecolor{table-row-color}{HTML}{F5F5F5}
+\definecolor{table-rule-color}{HTML}{999999}
+
+%\arrayrulecolor{black!40}
+\arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
+\setlength\heavyrulewidth{0.3ex}      % thickness of \toprule, \bottomrule
+\renewcommand{\arraystretch}{1.3}     % spacing (padding)
+
+% Reset rownum counter so that each table
+% starts with the same row colors.
+% https://tex.stackexchange.com/questions/170637/restarting-rowcolors
+\let\oldlongtable\longtable
+\let\endoldlongtable\endlongtable
+\renewenvironment{longtable}{
+\rowcolors{3}{}{table-row-color!100}  % row color
+\oldlongtable} {
+\endoldlongtable
+\global\rownum=0\relax}
+
+% Unfortunately the colored cells extend beyond the edge of the 
+% table because pandoc uses @-expressions (@{}) like so: 
+%
+% \begin{longtable}[]{@{}ll@{}}
+% \end{longtable}
+%
+% https://en.wikibooks.org/wiki/LaTeX/Tables#.40-expressions
+
+
+%
+% remove paragraph indention
+%
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+
+%
+%
+% Listings
+%
+%
+\lstdefinestyle{eisvogel_listing_style}{
+  language         = C,
+  xleftmargin      = 0.6em,
+  framexleftmargin = 0.4em,
+  backgroundcolor  = \color{listing-background},
+  basicstyle       = \color{listing-text-color}\small\ttfamily{}\linespread{1.15}, % print whole listing small
+  breaklines       = true,
+  frame            = single,
+  framesep         = 0.6mm,
+  rulecolor        = \color{listing-rule},
+  frameround       = ffff,
+  tabsize          = 4,
+  numberstyle      = \color{listing-numbers},
+  aboveskip        = 1.0em,
+  belowcaptionskip = 1.0em,
+  keywordstyle     = \color{listing-keyword}\bfseries,
+  classoffset      = 0,
+  sensitive        = true,
+  identifierstyle  = \color{listing-identifier},
+  commentstyle     = \color{listing-comment},
+  morecomment      = [s][\color{listing-c-comment}]{/**}{*/},
+  stringstyle      = \color{listing-string},
+  showstringspaces = false,
+  escapeinside     = {/*@}{@*/}, % Allow LaTeX inside these special comments
+  literate         =
+  {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+  {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+  {à}{{\`a}}1 {è}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+  {À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+  {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+  {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+  {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+  {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+  {œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+  {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+  {€}{{\EUR}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
+  {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1
+  {…}{{\ldots}}1 {≥}{{>=}}1 {≤}{{<=}}1 {„}{{\glqq}}1 {“}{{\grqq}}1
+  {”}{{''}}1
+}
+\lstset{style=eisvogel_listing_style}
+
+\lstdefinelanguage{XML}{
+  morestring      = [b]",
+  moredelim       = [s][\bfseries\color{listing-keyword}]{<}{\ },
+  moredelim       = [s][\bfseries\color{listing-keyword}]{</}{>},
+  moredelim       = [l][\bfseries\color{listing-keyword}]{/>},
+  moredelim       = [l][\bfseries\color{listing-keyword}]{>},
+  morecomment     = [s]{<?}{?>},
+  morecomment     = [s]{<!--}{-->},
+  commentstyle    = \color{listing-comment},
+  stringstyle     = \color{listing-string},
+  identifierstyle = \color{listing-identifier}
+}
+
+% 代码语法高亮显示配置
+\usepackage{fancyvrb}
+\DefineShortVerb[commandchars=\\\{\}]{\|}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\},frame=single,fontsize=\small}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+\newcommand{\RegionMarkerTok}[1]{{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+\newcommand{\NormalTok}[1]{{#1}}
+% end of code syntax highlight
+
+% 自定义高亮的颜色名称为 Light
+\definecolor{Light}{gray}{.90}
+
+\let\oldtexttt\texttt
+\renewcommand{\texttt}[1]{
+  \colorbox{Light}{\oldtexttt{#1}}
+}
+\newcommand{\hytt}[1]{\texttt{\hyphenchar\font=\defaulthyphenchar #1}}
+
+% 设置超链接相关配置
+\hypersetup{unicode=true,
+$if(title-meta)$
+            pdftitle={$title-meta$},
+$endif$
+$if(author-meta)$
+            pdfauthor={$author-meta$},
+$endif$
+$if(keywords)$
+            pdfkeywords={$for(keywords)$$keywords$$sep$; $endfor$},
+$endif$
+$if(colorlinks)$
+            colorlinks=true,
+            linkcolor=$if(linkcolor)$$linkcolor$$else$Maroon$endif$,
+            citecolor=$if(citecolor)$$citecolor$$else$Blue$endif$,
+            urlcolor=$if(urlcolor)$$urlcolor$$else$Blue$endif$,
+$else$
+            pdfborder={0 0 0},
+$endif$
+            breaklinks=true}
+
+\titleformat{\section}
+{\color{colorsection}\normalfont\Large\bfseries}
+{\color{colorsection}\thesection}{1em}{}
+\titleformat{\subsection}
+{\color{colorsubsection}\normalfont\large\bfseries}
+{\color{colorsubsection}\thesubsection}{1em}{}
+
+\definecolor{shadecolor}{gray}{0.90}
+
+\usepackage{xltxtra,fontspec,xunicode}
+\usepackage[slantfont,boldfont]{xeCJK}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage[BoldFont, SlantFont, CJKnumber, CJKchecksingle]{xeCJK}
+
+%---------------------------- 英文字体 ----------------------------------%
+% 衬线字体，是文档的默认字体
+%\setmainfont{DejaVu Serif}
+% 同setmainfont，由fontspec宠包提供
+%\setromanfont{DejaVu Serif}
+% 无衬线字体，比衬线字体更醒目，常用作标题
+%\setsansfont{DejaVu Sans}
+% 等宽字体
+%\setmonofont{DejaVu Sans Mono}
+\setmonofont{Consolas}
+%---------------------------- 中文字体 ----------------------------------%
+\setCJKmainfont[BoldFont={黑体}]{宋体}
+\setCJKsansfont[BoldFont={黑体}]{楷体}
+
+\setCJKfamilyfont{zhsong}{宋体}
+\setCJKfamilyfont{zhhei}{黑体}
+\setCJKfamilyfont{zhkai}{楷体}
+\setCJKfamilyfont{zhfs}{仿宋}
+\setCJKfamilyfont{zhli}{隶书}
+\setCJKfamilyfont{zhyou}{幼圆}
+\setCJKfamilyfont{yahei}{微软雅黑}
+
+% 创建简单的新命令代替字体表达
+\newcommand*{\yahei}{\CJKfamily{yahei}}   % 微软雅黑
+\newcommand*{\songti}{\CJKfamily{zhsong}} % 宋体
+\newcommand*{\heiti}{\CJKfamily{zhhei}}   % 黑体
+\newcommand*{\kaishu}{\CJKfamily{zhkai}}  % 楷书
+\newcommand*{\fangsong}{\CJKfamily{zhfs}} % 仿宋
+\newcommand*{\lishu}{\CJKfamily{zhli}}    % 隶书
+\newcommand*{\youyuan}{\CJKfamily{zhyou}} % 幼圆
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\XeTeXlinebreaklocale{zh}
+\XeTeXlinebreakskip=0em plus 0.1em minus 0.01em
+\XeTeXlinebreakpenalty=0
+
+\settowidth{\parindent}{文文}
+\setcounter{footnote}{0}
+
+$if(title)$
+\title{$title$$if(thanks)$\thanks{$thanks$}$endif$}
+$else$
+\title{{RT-Thread文档}}
+$endif$
+$if(subtitle)$
+\providecommand{\subtitle}[1]{}
+\subtitle{$subtitle$}
+$endif$
+$if(author)$
+\author{$for(author)$$author$$sep$ \and $endfor$}
+$else$
+\author{{RT-Thread 文档中心}}
+$endif$
+
+%\makeatletter
+%\let\savedauthor=\@author
+%\let\savedtitle=\@title
+%\def\imgwidth{.6\linewidth}
+%\def\maxwidth{\ifdim\Gin@nat@width>\imgwidth\imgwidth
+%\else\Gin@nat@width\fi}\
+%makeatother
+
+\makeatletter
+\let\savedauthor=\@author
+\let\savedtitle=\@title
+\def\ScaleWidthIfNeeded{%
+ \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\def\ScaleHeightIfNeeded{%
+  \ifdim\Gin@nat@height>0.9\textheight
+    0.9\textheight
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\setkeys{Gin}{width=\ScaleWidthIfNeeded,height=\ScaleHeightIfNeeded,keepaspectratio}
+
+$if(title)$
+\title{\huge{\savedtitle}}
+$endif$
+
+$if(author)$
+\author{\textbf{\savedauthor}\thanks{ RT-Thread在线文档中心: \url{http://www.rt-thread.org/document/site/}}}
+$endif$
+
+\def\w3cdtfymd{\the\year-\ifnum\month<10 0\fi\the\month-\ifnum\day<10 0\fi\the\day}
+\date{\w3cdtfymd}
+%\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\newcommand{\PreserveBackslash}[1]{\let\temp=\\#1\let\\=\temp}
+\let\PBS=\PreserveBackslash
+\makeatletter
+  \setlength\headheight{12\p@}
+  \setlength\headsep   {.25in}
+  \setlength\topskip   {10\p@}
+  \setlength\footskip{.35in}
+  \setlength\textwidth{400\p@}
+  
+  \setlength\@tempdima{\paperheight}
+  \addtolength\@tempdima{-2in}
+  \divide\@tempdima\baselineskip
+  \@tempcnta=\@tempdima
+  \setlength\textheight{\@tempcnta\baselineskip}
+  \addtolength\textheight{\topskip}
+  
+  \setlength\@tempdima        {\paperwidth}
+  \addtolength\@tempdima      {-\textwidth}
+  \setlength\oddsidemargin    {\paperwidth}
+  \addtolength\oddsidemargin  {-2.35in}
+  \addtolength\oddsidemargin  {-\textwidth}
+  \setlength\marginparwidth   {0pt}
+  \@settopoint\oddsidemargin
+  \@settopoint\marginparwidth
+  \setlength\evensidemargin  {\paperwidth}
+  \addtolength\evensidemargin{-2.35in}
+  \addtolength\evensidemargin{-\textwidth}
+  \@settopoint\evensidemargin
+  
+  \setlength\topmargin{\paperheight}
+  \addtolength\topmargin{-2in}
+  \addtolength\topmargin{-\headheight}
+  \addtolength\topmargin{-\headsep}
+  \addtolength\topmargin{-\textheight}
+  \addtolength\topmargin{-\footskip}     % this might be wrong!
+  \addtolength\topmargin{-.5\topmargin}
+  \@settopoint\topmargin
+  %\@addtoreset{footnote}{page}  
+\makeatother
+
+\newcommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+%\fancypagestyle{plain}{\fancyhf{}\fancyfoot[LE,RO]{\footnotesize\textbf\thepage}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot{}} % make sure no page number in page of first chapter
+
+\pagestyle{plain}
+
+
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\newcounter{img}[chapter]
+\renewcommand{\theimg}{\thechapter\arabic{img}}
+\newcommand{\img}[1]{\begin{figure}[H]
+	\refstepcounter{img}
+	\label{img:\theimg}
+	\centering\includegraphics[width=\maxwidth]{figures/\theimg.png}
+	\caption{#1}
+\end{figure}}
+
+\newcounter{tab}[chapter]
+\renewcommand{\thetab}{\thechapter.\arabic{tab}}
+
+\newcommand{\prechap}{第}
+\newcommand{\postchap}{章}
+\newcommand{\presect}{}
+\newcommand{\postsect}{节}
+\renewcommand{\chaptermark}[1]{\markboth{\textbf{\prechap \thechapter \postchap}\hspace*{1ex}#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\textbf{\presect \thesection \postsect}\hspace*{1ex}#1}}
+\newcommand{\chap}[1]{\thispagestyle{empty}\chapter{#1}\label{chap:\thechapter}}
+\newcommand{\chapref}[1]{\hyperref[chap:#1]{\prechap #1\postchap}}
+\newcommand{\imgref}[1]{\hyperref[img:#1]{图 #1}}
+\newcommand{\tabref}[1]{\hyperref[tab:#1]{表 #1}}
+\renewcommand{\contentsname}{目录}
+\renewcommand{\figurename}{图 }
+\renewcommand{\tablename}{表 }
+\renewcommand{\appendixname}{附录 }
+
+$if(applicationnote)$
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.}
+\renewcommand{\theparagraph}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.\arabic{paragraph}.}
+\renewcommand{\thesubparagraph}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.\arabic{paragraph}.\arabic{subparagraph}.}
+$endif$
+\setcounter{secnumdepth}{5}%
+
+% chapter 
+\makeatletter
+\def\@makechapterhead#1{%
+  \vspace*{50\p@}%
+  {\parindent \z@ \raggedright \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        \color{colorchapter}\normalfont\huge\bfseries\prechap{ }\thechapter{ }\postchap
+        \par\nobreak
+        \vskip 20\p@
+      \fi
+    \fi
+    \interlinepenalty\@M
+    \color{colorchapter}\normalfont\Huge\bfseries #1\par\nobreak
+    \vskip 40\p@
+  }}  
+ 
+% this is for non-normal chapter like Acknownledgement, Preface, Contents  
+\def\@makeschapterhead#1{%
+  \vspace*{50\p@}%
+  {\parindent \z@ \raggedright \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        \color{colorchapter}\normalfont\huge\bfseries \thechapter{ }
+        \par\nobreak
+        \vskip 20\p@
+      \fi
+    \fi
+    \interlinepenalty\@M
+    \color{colorchapter}\normalfont\Huge\bfseries #1\par\nobreak
+    \vskip 40\p@
+  }}  
+\makeatother
+
+% 配置行距参数，缺省是 1.2 倍字号大小，因此使用 \linespread{1.3} 最终行距为 1.56 倍字号大小
+\linespread{1.3}
+
+% 配置页边距相关信息
+\usepackage[a4paper,top=3cm,bottom=2cm,left=2.35cm,right=2.35cm,marginparwidth=1.75cm]{geometry}
+
+% 添加章节头样式，可选项: Sonny, Lenny, Glenn, Conny, Rejne, Bjarne, Bjornstrup
+%\usepackage[Sonny]{fncychap}
+
+% 正文内容开始
+\begin{document}
+
+% 创建文档首页
+\begin{titlepage}
+	%https://github.com/johannesbottcher/titlepageExamples/blob/master/jackal.tex
+	\setlength{\parindent}{0pt}
+	\rule{\textwidth}{2pt}\par
+	\vspace{1.3cm}
+	\sffamily{
+	\Huge
+	\addfontfeature{Letters=Uppercase,LetterSpace=5,WordSpace=1.1}
+	\raggedright
+	\MakeUppercase{\textbf{\textsf{$title$}}}
+	\par}
+	\rule{\textwidth}{1.2pt}\par
+	\vspace{1.7cm}
+	{\addfontfeature{Letters=Uppercase,LetterSpace=5,WordSpace=1.1}
+\bfseries \MakeUppercase{\Large \textsf{RT-Thread 文档中心}}
+\bigbreak
+	{\addfontfeature{Letters=Uppercase,LetterSpace=5,WordSpace=1.1}
+	\bfseries \MakeUppercase{上海睿赛德电子科技有限公司 版权@2021}}\par 
+\vfill
+\medbreak
+	\includegraphics[width=$if(logo-width)$$logo-width$$else$100$endif$pt]{build/logo.png}
+  {\fontsize{50pt}{50pt}\par}
+  \bfseries \MakeUppercase{www.rt-thread.org}\par 
+  \textsf{\today}}
+\end{titlepage}
+
+% 设置文档首页的页眉页脚为空
+\thispagestyle{empty}
+
+% 设置控制目录的深度
+\setcounter{tocdepth}{4}
+
+% 前言部分，页码为小写罗马字母格式
+\frontmatter
+% --include-before-body=FILENAME (-B)
+$for(include-before)$
+$include-before$
+$endfor$
+% --include-before-body=FILENAME (-B)
+
+% 生成目录，并且不使用页眉页脚
+\tableofcontents\thispagestyle{empty}
+
+% 使用 \fancyhf{} 来清空页眉页脚的设置后，配置页眉、页脚参数后调用 fancy 页眉页脚样式
+\fancyhf{}
+%\fancyhead[LE]{\color{colorheader}\quad\small\textbf\thepage\quad\quad\small\leftmark}
+\fancyhead[LE,RO]{\color{colorheader}\small\rightmark\quad\quad}
+\fancyhead[RE,LO]{\color{colorheader}\small{\savedtitle}} % book title 
+\fancyfoot[LE,RO]{\small\textbf\thepage}  % page number
+\fancyfoot[C]{\small\textbf{\savedtitle}} % could add release information
+\fancyfoot[L]{\includegraphics[width=2cm]{build/logo.png}}
+
+%\renewcommand{\headrulewidth}{0.4pt}  % add one line
+%\renewcommand{\headrule}{\color{red}} % conflict with headrulewidth
+\pagestyle{fancy}
+
+% 正文部分（即章节部分），页码为阿拉伯数字格式，从 1 开始计数
+\mainmatter
+%chapters
+$body$
+
+% 配置附录部分格式
+\appendices
+\renewcommand{\prechap}{\appendixname}
+\renewcommand{\postchap}{}
+
+% 正文内容结束
+\end{document}

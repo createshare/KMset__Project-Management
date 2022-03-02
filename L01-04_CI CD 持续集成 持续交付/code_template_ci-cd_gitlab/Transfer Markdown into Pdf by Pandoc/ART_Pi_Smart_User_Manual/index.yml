@@ -1,0 +1,9 @@
+site_name: ART-Pi Smart 用户手册
+site_author: RT-Thread Smart 文档中心
+theme: 'material'
+site_dir: .
+docs_dir: .
+      
+pages:
+
+- .: 'ART_Pi_Smart_User_Manual.md'
