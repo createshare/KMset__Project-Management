@@ -1,0 +1,37 @@
+stages:
+  - build
+  - test
+  - deploy
+
+# 构建 ART-Pi Smart 文档
+doc_ART-Pi-Smart:
+  stage: build
+  image: ubuntu_ci_document_build
+  tags:
+    - document_deploy
+  only:
+    - master
+  script:
+    # environment.
+    - echo machine git.rt-thread.com login $CI_REGISTRY_USER password $CI_REGISTRY_PASSWORD >> ~/.netrc
+    # install.
+    - git clone -q https://git.rt-thread.com/document/mkdocs-pandoc.git ./mkdocs-pandoc
+    - cd ./mkdocs-pandoc && python setup.py install && sudo dpkg -i pandoc-2.3-1-amd64.deb
+    - sudo mkdir -pv /usr/share/fonts/truetype/windows-font
+    - sudo cp -r ./fonts/* /usr/share/fonts/truetype/windows-font
+    - sudo chmod -R 777 /usr/share/fonts/truetype/windows-font
+    - cd /usr/share/fonts/truetype/windows-font
+    - sudo apt-get install fontconfig
+    - sudo fc-cache
+
+    # build ART_Pi_Smart_User_Manual.pdf
+    - echo "build pdf"
+    - cd $CI_PROJECT_DIR/documents/ART_Pi_Smart_User_Manual
+    - make clean && make
+    - mkdir -p $CI_PROJECT_DIR/documents_build/ART_Pi_Smart_User_Manual
+    - cp $CI_PROJECT_DIR/documents/ART_Pi_Smart_User_Manual/build/ART_Pi_Smart_User_Manual.pdf $CI_PROJECT_DIR/documents_build/ART_Pi_Smart_User_Manual/'ART-Pi Smart 用户手册'.pdf
+
+  artifacts:
+    paths:
+    - documents_build/
+
