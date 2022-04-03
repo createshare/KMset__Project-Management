@@ -59,6 +59,40 @@
 
 ![GitLab 看板集合](figures/GitLab 看板集合.png)
 
+## CI/CD 支持技术
+
+![CI-CD 支持技术](figures/CI-CD 支持技术.png)
+
+## 具体项目的操作流程（敏捷开发）
+
+Story和 每个Task，需要形成“闭环”，如下所示：
+
+- Step_1) 访问“看板” story-v1.1
+
+- Step_2)根据上周Review的 Tasklist, 在Gitlab的议题里面，新建“Task”，并挂到 “story-v1.1 看板”（通过选择标记：story-v1.1、SDK组or IDE组）。
+  具体可以参考 SDK 组，在Story里面，建Task的方法。
+
+- Step_3)提前列好 此 Story （本周）要完成的Task之后，都可以在“看板界面”，通过“拖拉 Task” 来切换Task的状态。
+  （即只关心story-v1.1里面的Task，不会看到其他议题，同时可以看到所有团队的进度、状态）
+
+- Step_4)如果Task需要修改代码，则在Git里面，新建对应 branch（以“Task”的名字命名此 branch）。
+
+      care_1: 最好从 develop 分支基础上，新建分支。（因为develop 分支包含目前最新的代码。）
+      
+      care_2: 如果此Task/branch 耗时比较长，请记得时不时地，把你的branch rebase到 develop 分支（以减少多人修改同一个文件的冲突） 
+
+- Step_5)在此 branch 完成此Task的功能模块开发，完成模块功能测试+完善对应的SDD文档、测试记录。
+
+- Step_6) Merge 此 branch到 develop 分支，在Gitlab上，提交 “Merge Request” 给相关的人员。
+
+- Step_7) 如果 branch 有问题，则重新完成 Step_5 和 Step_6
+
+- Step_8) 完成此Task之后，在“看板”，把 “此Task”，拖拉到 “Done 列表”
+
+- Step_9) 打开“此Task”，在评论区，添加评论：例此Task的注意事项、还有哪些地方需要优化、测试的截图等
+
+- Step_10)最后，Close掉此 Task。完整地结束此Task。
+
 
 
 # 敏捷项目管理软件
