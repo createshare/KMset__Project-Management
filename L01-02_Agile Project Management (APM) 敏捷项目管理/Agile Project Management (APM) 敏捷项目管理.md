@@ -20,6 +20,47 @@
 
 
 
+# 敏捷开发流程+ Demo演示：Story+Task+看板+WiKi
+
+## 敏捷开发（Agile）流程
+
+- 后面准备按照产品规划，走 敏捷开发 流程来推进项目，把 ,再做进一步拆分成多个 Story/Sprint（“小目标”的冲刺周期）
+- 每个 Story 的周期一般为 2~6 周 （我们目前，定的Story 为2 周）， 每个 Story再细分成多个Task
+- 每个 Task 的工作量一般为：1 天 到 2 天
+- 需要项目成员根据自己负责的模块，在每个 Story 开始之前，预估自已在这个 Story （未来 2 周）的 task，在 GitLab 仓库，列出所有的Task，每个Task，对应一个 “议题”
+- 最后，通过 Task/Story/议题 的 “看板”，来追踪 每个 Story （包括每个 Task） 的状态。
+- 好处：便于多个团队一起协作开发，相互了解项目整体状态。（并且每个 Task 都在 Gitlab 上有记录，方便 Review、追溯、新成员熟悉项目历史等）
+
+## Demo 演示：Story+Task+看板
+
+### GitLab 看板模块
+
+- GitLab 看板_价值流__不是看的，是用来协作的
+
+![GitLab 看板_价值流__不是看的，是用来协作的](figures/GitLab 看板_价值流__不是看的，是用来协作的.png)
+
+- GitLab 看板_任务 Task
+
+  ![GitLab 看板_任务 Task](figures/GitLab 看板_任务 Task.png)
+
+### GitLab 议题：沟通工具+历史记录+可追溯
+
+![GitLab 议题：沟通工具+历史记录+可追溯](figures/GitLab 议题：沟通工具+历史记录+可追溯.png)
+
+### GitLab WiKi 文档管理、知识管理
+
+![GitLab WiKi 文档管理、知识管理](figures/GitLab WiKi 文档管理、知识管理.png)
+
+### GitLab 里程碑
+
+![GitLab 里程碑](figures/GitLab 里程碑.png)
+
+### GitLab 看板集合
+
+![GitLab 看板集合](figures/GitLab 看板集合.png)
+
+
+
 # 敏捷项目管理软件
 
 ## GitLab
